@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../static/css/style.css">
+    {% block head %}
+    <title>Index</title>
+    {% endblock %}
+  </head>
+  <body>
+    <!-- TODO: Update this header -->
+    <header>
+      <ul>
+        <li><a href="/"        >Главная страница</a></li>
+        <li><a href="/products">Продукция</a></li>
+        <li><a href="/contacts">Контакты</a></li>
+        <li><a href="/cart"    >Корзина</a></li>
+        <li><a href="/about"   >О компании</a></li>
+        <li><a href="/logout"  >Выход</a></li>
+      </ul>
+    </header>
+    {% block content %}
+    <!-- TODO: Add sth here -->
+    {% endblock %}
+  </body>
+
+</html>

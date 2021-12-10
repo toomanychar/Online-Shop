@@ -1,0 +1,24 @@
+{% extends 'index.html' %}
+{% block head %}
+<link rel="stylesheet" href="static/css/order.css">
+<title> Оформление заказа </title>
+{% endblock %}
+{% block content %}
+<!-- TODO: Make this all look nicer -->
+<form action='/order' method='post'>
+    <ul class="form">
+        <!-- TODO: Add autofill from user profile here (in the python func) -->
+        <li> <input required type="text"  name="phone_number" placeholder="Номер Телефона"> </li>
+        <li> <input required type="datetime-local"  name="delivery_date" placeholder="Дата"> </li>
+
+        <!-- TODO: Move the button below to a nice menu that scrolls with the screen, while keeping this functionality-->
+        <li> <button type="submit">Заказ Подтверждаю</button> </li>
+    </ul>
+</form>
+<!-- TODO: Add basket integration here-->
+<!-- TODO: Add delivery selection here -->
+<!-- TODO: Add payment type selection here -->
+<!-- TODO: Add a nice final menu with submit button and sth else -->
+
+{{ error }}
+{% endblock %}

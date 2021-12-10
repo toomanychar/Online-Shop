@@ -1,0 +1,21 @@
+{% extends 'index.html' %}
+{% block head %}
+<link rel="stylesheet" href="static/css/register.css">
+<title> Регистрация </title>
+{% endblock %}
+{% block content %}
+<!-- TODO: Make this all look nicer -->
+<form action='/register' method='post'>
+    <ul class="form">
+        <!-- TODO: Add Clientside JavaScript to check validity of entered fields -->
+        <li> <input required type="email"    name="email"           placeholder="E-Mail"> </li>
+        <li> <input required type="password" name="password"        placeholder="Пароль"> </li>
+        <li> <input required type="password" name="password_repeat" placeholder="Повтор Пароля"> </li>
+        <!-- TODO: Add other optional fields-->
+        <li> <input type="text" name="name" placeholder="Имя Фамилия"> </li>
+        <li> <input type="tel" name="phone" placeholder="Номер телефона"> </li>
+
+        <li> <button type="submit">Зарегистрироваться</button> </li>
+    </ul>
+</form>
+{% endblock %}
