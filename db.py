@@ -1,6 +1,7 @@
 import mariadb
 from os.path import isfile
 
+
 connection_parameters = {
     "user": "admin",
     "password": "not password",
@@ -85,7 +86,7 @@ def get_cart_by_id(user_id):
 def get_product_page_info_by_product_id(product_id):
     product, maker = {}, {}
 
-    product_results = get(f'SELECT type, name, price, maker_id FROM product WHERE product_id = {product_id}')
+    product_results = get(f'SELECT type, name, base_price, maker_id FROM product WHERE product_id = {product_id}')
     if len(product_results) != 0:
         product['type'] = product_results[0][0]
 
@@ -95,29 +96,28 @@ def get_product_page_info_by_product_id(product_id):
 
         product['imgs'] = []
         for i in range(30):   # Hardcoded limit of amount of images
-            if isfile(f'dynamic/images/product/{product_id}_{i}.jpg'):
-                product['imgs'].append(f'../dynamic/images/product/{product_id}_{i}.jpg')
+            fn = f'static/images/product/{product_id}_{i}.jpg'
+            if isfile(fn):
+                product['imgs'].append(fn)
             else:
                 break
         if len(product['imgs']) == 0:
-            product['imgs'] = ['../static/images/missing_product.png']
-
-        product['imgs_range'] = range(len(product['imgs']))
+            product['imgs'] = ['static/images/missing_product.png']
 
         maker['id'] = product_results[0][3]
 
         maker_results = get(f'SELECT name FROM user WHERE user_id = {maker["id"]}')
         if len(maker_results) != 0:
             maker['name'] = maker_results[0][0]
-
-            if isfile(f'dynamic/images/user/{maker["id"]}.jpg'):
-                maker['img'] = f'../dynamic/images/user/{maker["id"]}.jpg'
+            fn = f'static/images/user/{maker["id"]}.jpg'
+            if isfile(fn):
+                maker['img'] = fn
             else:
-                maker['img'] = '../static/images/missing_user.png'
+                maker['img'] = 'static/images/missing_user.png'
         else:
             maker['name'] = 'Unknown maker'
 
-            maker['img'] = '../static/images/missing_user.png'
+            maker['img'] = 'static/images/missing_user.png'
     return product, maker
 
 

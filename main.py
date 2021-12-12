@@ -25,9 +25,9 @@ def login_required(func):
     return wrapper
 
 
-tg_bot = Bot(token='2137464088:AAHVdrnk00CYWJQQEPSJsieOLI9_19CE3RA')
-tg_updater = Updater(token='2137464088:AAHVdrnk00CYWJQQEPSJsieOLI9_19CE3RA', use_context=True)
-tg_dispatcher = tg_updater.dispatcher
+# tg_bot = Bot(token='2137464088:AAHVdrnk00CYWJQQEPSJsieOLI9_19CE3RA')
+# tg_updater = Updater(token='2137464088:AAHVdrnk00CYWJQQEPSJsieOLI9_19CE3RA', use_context=True)
+# tg_dispatcher = tg_updater.dispatcher
 
 
 # TODO: Figure out how to fix the telegram bot bug
@@ -35,35 +35,35 @@ tg_dispatcher = tg_updater.dispatcher
 # actually stop.
 
 
-def tg_start(update, context):
-    context.bot.send_message(update.effective_chat.id, "Привет!")
-
-
-def callback_request(update, context):
-    data = requests.get('http://localhost:5000/api/orders').json()
-    print(data)
-    context.bot.send_message(chat_id=update.effective_chat.id, text='orderssss')
-    if data:
-        context.bot.send_message(chat_id=update.effective_chat.id, text=str(data[-1]))
-
-
-def callback_alarm(context):
-    context.bot.send_message(chat_id=context.job.context, text='BEEP!')
-
-
-def callback_timer(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text='Начинаем!')
-    tg_updater.job_queue.run_repeating(callback_alarm, 1, context=update.message.chat_id)
-
-
-tg_start_handler = CommandHandler('start', tg_start, run_async=True)
-tg_dispatcher.add_handler(tg_start_handler)
-tg_callback_timer_handler = CommandHandler('timer', callback_timer, run_async=True)
-tg_dispatcher.add_handler(tg_callback_timer_handler)
-tg_callback_request_handler = CommandHandler('request', callback_request, run_async=True)
-tg_dispatcher.add_handler(tg_callback_request_handler)
-
-tg_updater.start_polling()
+# def tg_start(update, context):
+#     context.bot.send_message(update.effective_chat.id, "Привет!")
+#
+#
+# def callback_request(update, context):
+#     data = requests.get('http://localhost:5000/api/orders').json()
+#     print(data)
+#     context.bot.send_message(chat_id=update.effective_chat.id, text='orderssss')
+#     if data:
+#         context.bot.send_message(chat_id=update.effective_chat.id, text=str(data[-1]))
+#
+#
+# def callback_alarm(context):
+#     context.bot.send_message(chat_id=context.job.context, text='BEEP!')
+#
+#
+# def callback_timer(update, context):
+#     context.bot.send_message(chat_id=update.effective_chat.id, text='Начинаем!')
+#     tg_updater.job_queue.run_repeating(callback_alarm, 1, context=update.message.chat_id)
+#
+#
+# tg_start_handler = CommandHandler('start', tg_start, run_async=True)
+# tg_dispatcher.add_handler(tg_start_handler)
+# tg_callback_timer_handler = CommandHandler('timer', callback_timer, run_async=True)
+# tg_dispatcher.add_handler(tg_callback_timer_handler)
+# tg_callback_request_handler = CommandHandler('request', callback_request, run_async=True)
+# tg_dispatcher.add_handler(tg_callback_request_handler)
+#
+# tg_updater.start_polling()
 
 
 @app.route('/404')

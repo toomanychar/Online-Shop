@@ -13,9 +13,9 @@
     <div class="product-name"> {{ product['name'] }} </div>
     <div class="product_price"> {{ product['price'] }} </div>
     <div class="product-images">
-        {% for img_i in product['imgs_range'] %}
+        {% for img in product['imgs'] %}
             <div class="product-image">
-                <img src="{{ product['imgs'][img_i] }}" width="250" height="250" alt="Your browser does not support images">
+                <img src="../{{ img }}" width="250" height="250" alt="Your browser does not support images">
             </div>
         {% endfor %}
     </div>
