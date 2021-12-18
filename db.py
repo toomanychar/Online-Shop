@@ -61,11 +61,7 @@ def get_user_id_by_email(email):
         return None
 
 
-def put_user(form):
-    email = form['email']
-    name = form['name']
-    hashed_password = form['hashed_password']
-
+def put_user(email, name, hashed_password):
     return put(f'INSERT INTO user (email, name, password) VALUES ("{email}", "{name}", "{hashed_password}")')
 
 
@@ -99,8 +95,6 @@ def get_product_page_info_by_product_id(product_id):
             fn = f'static/images/product/{product_id}_{i}.jpg'
             if isfile(fn):
                 product['imgs'].append(fn)
-            else:
-                break
         if len(product['imgs']) == 0:
             product['imgs'] = ['static/images/missing_product.png']
 
@@ -121,9 +115,10 @@ def get_product_page_info_by_product_id(product_id):
     return product, maker
 
 
-def get_products_page_by_parameters(ptype, price_min, price_max, sort, page):
-    sorting_methods = []
-    sorting_method = sorting_methods[sort]
-    command = f'SELECT name, base_price, sale_percent FROM product WHERE type = "{ptype}" AND base_price - base_price * sale_percent / 100 <= {price_max} AND base_price - base_price * sale_percent / 100 >= {price_min}'
-
+def get_products_page_by_parameters(ptype, price_min, price_max, sort, page, from_top):
+    sorting_variables = ()
+    sorting_variable = sorting_variables[sort]
+    d = 'DESC' if from_top else 'ASC'
+    c = f'SELECT name, base_price, sale_percent FROM product WHERE type = "{ptype}" AND base_price - base_price * sale_percent / 100 <= {price_max} AND base_price - base_price * sale_percent / 100 >= {price_min} ORDER BY {sorting_variable} {d} LIMIT 30 OFFSET {page * 30}'
+    products = get(c)
     return products

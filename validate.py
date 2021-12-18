@@ -12,8 +12,9 @@ def check_password(plain_text_password, hashed_password):
 
 
 def password_is_strong(password):
-    # TODO: Check strength and validity of password
-    return True
+    from password_strength import PasswordStats
+    strength = PasswordStats(password).strength()
+    return strength > 0.7
 
 
 def order(form):
@@ -33,13 +34,15 @@ def register(form):
     name = form['name']
     phone = form['phone']
 
+    if 6 > len(password):
+        return 'Password is too short! (less than 6 symbols)'
+    if 100 < len(password):
+        return 'Password is too long! (more than 100 symbols)'
     if not password_is_strong(password):
         return 'Password not strong enough!'
     if password != password_repeat:
         return "Passwords must match!"
     # TODO: Check email correctness with RE
-    if email == '':
-        return 'Email is empty!'
 
     if db.is_email_in_db(email):
         return 'This email is already in use!'
@@ -74,5 +77,4 @@ def products(ptype, price_min, price_max, sort, page):
             or not sort.isnumeric():
         return False
 
-    return True
-
+    return len(ptype) != 0 and ptype.replace(' ', '').isalpha()

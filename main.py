@@ -1,18 +1,15 @@
 from datetime import timedelta
+from secrets import token_urlsafe
+
 from flask import Flask, render_template, request, redirect, url_for, session
 from jinja2 import *
 import db
 import validate
-from telegram import Bot
-from telegram.ext import Updater, CommandHandler
-import requests
-
 
 app = Flask(__name__)
-# TODO: Make a better, preferably long and randomly generated secret key
-app.config['SECRET_KEY'] = 'not secret key'
-# TODO: Think about it and choose a good permanent session lifetime
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=5)
+
+app.config['SECRET_KEY'] = token_urlsafe(64)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
 
 def login_required(func):
@@ -24,16 +21,17 @@ def login_required(func):
     wrapper.__name__ = func.__name__
     return wrapper
 
+# from telegram import Bot
+# from telegram.ext import Updater, CommandHandler
+# import requests
 
 # tg_bot = Bot(token='2137464088:AAHVdrnk00CYWJQQEPSJsieOLI9_19CE3RA')
 # tg_updater = Updater(token='2137464088:AAHVdrnk00CYWJQQEPSJsieOLI9_19CE3RA', use_context=True)
 # tg_dispatcher = tg_updater.dispatcher
 
-
 # TODO: Figure out how to fix the telegram bot bug
 # The telegram bot bug is: because of the telegram bot, for some reason, you have to stop the program twice for it to
 # actually stop.
-
 
 # def tg_start(update, context):
 #     context.bot.send_message(update.effective_chat.id, "Привет!")
@@ -86,9 +84,9 @@ def products_page():
         price_max = int(price_min)
         sort = int(sort)
         page = int(page)
-        product, maker = db.get_products_page_by_parameters(ptype=ptype, price_min=price_min, price_max=price_max, sort=sort, page=page)
+        product = db.get_products_page_by_parameters(ptype=ptype, price_min=price_min, price_max=price_max, sort=sort, page=page)
         if len(product) != 0:
-            return render_template('products.html')
+            return render_template('products.html', product=product)
         else:
             return redirect(url_for('not_found'))
     else:
@@ -134,7 +132,6 @@ def order_page():
             # TODO: Get all necessary fields from the user object
             user_id = session['user_id']
             products = session['user_cart']
-            print(products)
             # TODO: Get all necessary fields from request.form
             phone_number = request.form['phone_number']
             delivery_date = request.form['delivery_date'].replace('T', ' ')
@@ -169,7 +166,7 @@ def register_page():
             #     And reset session
             #     2b. If everything goes right, redirect the user to a page with the success
             request.form['hashed_password'] = validate.hash_password(request.form['password'])
-            db.put_user(request.form)
+            db.put_user(request.form['email'], request.form['name'], request.form['hashed_password'])
         else:
             return render_template('login.html', error=validation_error)
     return render_template('register.html')
