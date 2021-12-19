@@ -14,7 +14,7 @@ def check_password(plain_text_password, hashed_password):
 def password_is_strong(password):
     from password_strength import PasswordStats
     strength = PasswordStats(password).strength()
-    return strength > 0.7
+    return strength > 0.6
 
 
 def order(form):
@@ -70,11 +70,12 @@ def login(email, password):
     return user_id
 
 
-def products(ptype, price_min, price_max, sort, page):
-    if not price_min.isnumeric() \
-            or not price_max.isnumeric() \
-            or not page.isnumeric() \
-            or not sort.isnumeric():
+def products(ptype, price_min, price_max, sort, page, from_top):
+    if not (price_min is None or price_min.isnumeric()) \
+            or not (price_max is None or price_max.isnumeric()) \
+            or not (page is None or page.isnumeric()) \
+            or not (sort is None or sort.isnumeric()) \
+            or not (from_top is None or from_top == '0' or from_top == '1'):
         return False
 
     return len(ptype) != 0 and ptype.replace(' ', '').isalpha()

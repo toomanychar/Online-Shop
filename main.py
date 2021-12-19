@@ -69,6 +69,11 @@ def not_found():
     return 404
 
 
+@app.route('/test')
+def test():
+    return 'H'
+
+
 @app.route('/products')
 def products_page():
     # TODO: Fill in products.html
@@ -79,12 +84,15 @@ def products_page():
     price_max = request.args.get('price_max')
     sort = request.args.get('sort')
     page = request.args.get('page')
-    if validate.products(ptype=ptype, price_min=price_min, price_max=price_max, sort=sort, page=page):
-        price_min = int(price_min)
-        price_max = int(price_min)
-        sort = int(sort)
-        page = int(page)
-        product = db.get_products_page_by_parameters(ptype=ptype, price_min=price_min, price_max=price_max, sort=sort, page=page)
+    from_top = request.args.get('from_top')
+
+    if validate.products(ptype=ptype, price_min=price_min, price_max=price_max, sort=sort, page=page, from_top=from_top):
+        price_min = 0 if price_min is None else int(price_min)
+        price_max = 65534 if price_max is None else int(price_min)
+        sort = 0 if sort is None else int(sort)
+        page = 0 if page is None else int(page)
+        from_top = bool(from_top)
+        product = db.get_products_page_by_parameters(ptype=ptype, price_min=price_min, price_max=price_max, sort=sort, page=page, from_top=from_top)
         if len(product) != 0:
             return render_template('products.html', product=product)
         else:
@@ -145,6 +153,10 @@ def order_page():
             return redirect(url_for('order_list_page'))
         else:
             return render_template('order.html', error=validation_error)
+
+    cart = session['user_cart']
+
+
     return render_template('order.html')
 
 

@@ -122,3 +122,15 @@ def get_products_page_by_parameters(ptype, price_min, price_max, sort, page, fro
     c = f'SELECT name, base_price, sale_percent FROM product WHERE type = "{ptype}" AND base_price - base_price * sale_percent / 100 <= {price_max} AND base_price - base_price * sale_percent / 100 >= {price_min} ORDER BY {sorting_variable} {d} LIMIT 30 OFFSET {page * 30}'
     products = get(c)
     return products
+
+
+def get_product_info_by_id(product_id):
+    info = get(f'SELECT stock, price, sale_percent, name FROM product WHERE product_id = {product_id}')
+    return info
+
+
+def get_products_info_by_ids(cart):
+    infos = []
+    for p in cart:
+        infos.append(get_product_info_by_id(p[0]) + p[1])
+    return infos

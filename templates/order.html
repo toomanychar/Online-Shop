@@ -10,6 +10,13 @@
         <!-- TODO: Add autofill from user profile here (in the python func) -->
         <li> <input required type="text"  name="phone_number" placeholder="Номер Телефона"> </li>
         <li> <input required type="datetime-local"  name="delivery_date" placeholder="Дата"> </li>
+        {% for item in spisok %}
+            <div class="basket">
+                <span class="basket-item-name"> {{ item.name }} </span>
+                <span class="basket-item-price"> {{ item.price }} </span>
+                <img src="{{ item.img }}" width="250" height="250" alt="Your browser does not support images">
+            </div>
+        {% endfor %}
 
         <!-- TODO: Move the button below to a nice menu that scrolls with the screen, while keeping this functionality-->
         <li> <button type="submit">Заказ Подтверждаю</button> </li>
