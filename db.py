@@ -45,7 +45,7 @@ def is_email_in_db(email):
     return len(result) != 0
 
 
-def get_password_by_email(email):
+def get_pswd_by_email(email):
     result = get(f'SELECT password FROM user WHERE email = "{email}"')
     if len(result) != 0:
         return result[0][0]
@@ -61,8 +61,10 @@ def get_user_id_by_email(email):
         return None
 
 
-def put_user(email, name, hashed_password):
-    return put(f'INSERT INTO user (email, name, password) VALUES ("{email}", "{name}", "{hashed_password}")')
+def put_user(hashed_pswd, email, name, phone, city):
+    phone = 'NULL' if phone is None else '"' + phone + '"'
+    city = 'NULL' if city is None else '"' + city + '"'
+    return put(f'INSERT INTO user (password, email, name, phone_number, city) VALUES ("{hashed_pswd}", "{email}", "{name}", {phone}, {city})')
 
 
 def put_orders(user_id, delivery_date, delivery_type, delivery_address, payment_type, products):
@@ -72,11 +74,6 @@ def put_orders(user_id, delivery_date, delivery_type, delivery_address, payment_
     for product in products:
         put(f'INSERT INTO orders_products (order_id, product_id, product_count) VALUES ({order_id}, {product[0]}, {product[1]})')
     return None
-
-
-def get_cart_by_id(user_id):
-    result = get(f'SELECT product_id, product_count FROM basket WHERE user_id = {user_id}')
-    return result
 
 
 def get_product_page_info_by_product_id(product_id):
@@ -91,7 +88,7 @@ def get_product_page_info_by_product_id(product_id):
         product['price'] = product_results[0][2]
 
         product['imgs'] = []
-        for i in range(30):   # Hardcoded limit of amount of images
+        for i in range(30):   # Max amount of images for a product
             fn = f'static/images/product/{product_id}_{i}.jpg'
             if isfile(fn):
                 product['imgs'].append(fn)
@@ -116,21 +113,29 @@ def get_product_page_info_by_product_id(product_id):
 
 
 def get_products_page_by_parameters(ptype, price_min, price_max, sort, page, from_top):
-    sorting_variables = ()
-    sorting_variable = sorting_variables[sort]
+    sorting_vars = ()
+    sorting_var = sorting_vars[sort]
     d = 'DESC' if from_top else 'ASC'
-    c = f'SELECT name, base_price, sale_percent FROM product WHERE type = "{ptype}" AND base_price - base_price * sale_percent / 100 <= {price_max} AND base_price - base_price * sale_percent / 100 >= {price_min} ORDER BY {sorting_variable} {d} LIMIT 30 OFFSET {page * 30}'
-    products = get(c)
-    return products
+    c = f'SELECT product_id, name, base_price, sale_percent FROM product WHERE type = "{ptype}" AND base_price - base_price * sale_percent / 100 <= {price_max} AND base_price - base_price * sale_percent / 100 >= {price_min} ORDER BY {sorting_var} {d} LIMIT 30 OFFSET {page * 30}'
+    return get(c)
 
 
-def get_product_info_by_id(product_id):
-    info = get(f'SELECT stock, price, sale_percent, name FROM product WHERE product_id = {product_id}')
-    return info
+def get_cart_by_user_id(user_id):
+    return get(f'SELECT product_id, product_count FROM basket WHERE user_id = {user_id}')
 
 
-def get_products_info_by_ids(cart):
+def get_full_cart(cart):
+
+    def get_product_info_by_id(product_id):
+        info = get(f'SELECT stock, price, sale_percent, name, product_id FROM product WHERE product_id = {product_id}')
+        return info
+
     infos = []
     for p in cart:
-        infos.append(get_product_info_by_id(p[0]) + p[1])
+        infos.append(get_product_info_by_id(p[0]) + [p[1]])
     return infos
+
+
+def get_orders(user_id):
+    # TODO
+    return []
