@@ -1,7 +1,7 @@
 {% extends 'index.html' %}
 {% block head %}
 <link rel="stylesheet" href="static/css/register.css">
-<title> Регистрация </title>
+<title> MOZETKA | Регистрация </title>
 {% endblock %}
 {% block content %}
 <!-- TODO: Make this all look nicer -->
@@ -12,8 +12,10 @@
         <li> <input required type="password" name="password"        placeholder="Пароль"> </li>
         <li> <input required type="password" name="password_repeat" placeholder="Повтор Пароля"> </li>
         <!-- TODO: Add other optional fields-->
-        <li> <input type="text" name="name" placeholder="Имя Фамилия"> </li>
+        <li> <input required type="text" name="name" placeholder="Имя Фамилия"> </li>
         <li> <input type="tel" name="phone" placeholder="Номер телефона"> </li>
+        <li> <input type="text" name="city" placeholder="Город"> </li>
+
 
         <li> <button type="submit">Зарегистрироваться</button> </li>
     </ul>

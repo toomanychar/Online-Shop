@@ -1,7 +1,7 @@
 {% extends 'index.html' %}
 {% block head %}
 <link rel="stylesheet" href="static/css/order.css">
-<title> Оформление заказа </title>
+<title> MOZETKA | Оформление заказа </title>
 {% endblock %}
 {% block content %}
 <!-- TODO: Make this all look nicer -->
@@ -17,11 +17,22 @@
                 <img src="{{ item.img }}" width="250" height="250" alt="Your browser does not support images">
             </div>
         {% endfor %}
-
-        <!-- TODO: Move the button below to a nice menu that scrolls with the screen, while keeping this functionality-->
+        <div class="basket-total"></div>
+        <!-- TODO: Move the button below to a nice menu that scrolls with the screen, while keeping the functionality-->
         <li> <button type="submit">Заказ Подтверждаю</button> </li>
     </ul>
 </form>
+<script>
+    window.onload( function() {
+        let items = document.querySelectorAll('basket-item-price');
+        let sum = 0;
+        items.forEach(function(elem) {
+            sum = sum + Number(elem);
+        });
+        let basket-total = document.querySelector("basket-total");
+        basket-total.innerHTML = "TOTAL PRICE " + sum;
+    });
+</script>
 <!-- TODO: Add basket integration here-->
 <!-- TODO: Add delivery selection here -->
 <!-- TODO: Add payment type selection here -->

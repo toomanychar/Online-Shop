@@ -1,1 +1,10 @@
-{% block content %} <div class = "bg-image"> </div> <a class = "a1" href = "order"> Оформить заказ</a> {% endblock %}
+{% extends 'index.html' %}
+{% block head %}
+<link rel="stylesheet" href="static/css/cart.css">
+<title> MOZETKA | Моя корзина </title>
+{% endblock %}
+{% block content %}
+
+<div class = "bg-image"> </div> <a class = "a1" href = "order"> Оформить заказ</a>
+
+{% endblock %}

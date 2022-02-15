@@ -1,23 +1,37 @@
-import re
-import bcrypt
 import db
+import re
 
 
-def hash_password(plain_text_password):
-    return bcrypt.hashpw(plain_text_password.encode('utf-8'), bcrypt.gensalt())
+def hash_pswd(plain_text_password):
+    from bcrypt import hashpw, gensalt
+    return hashpw(plain_text_password.encode('utf-8'), gensalt())
 
 
-def check_password(plain_text_password, hashed_password):
-    return bcrypt.checkpw(plain_text_password.encode('utf-8'), hashed_password)
+def check_pswd(plain_text_pswd, hashed_pswd):
+    from bcrypt import checkpw
+    return checkpw(plain_text_pswd.encode('utf-8'), hashed_pswd.encode('utf-8'))
 
 
-def password_is_strong(password):
+def generate_registration_code():
+    from secrets import choice
+    from string import ascii_uppercase, digits
+    return ''.join(choice(ascii_uppercase + digits) for _ in range(5))
+
+
+def validate_registration_code(code, real_code):
+    if code.len() != real_code.len():
+        return False
+
+    return code == real_code
+
+
+def pswd_is_strong(pswd):
     from password_strength import PasswordStats
-    strength = PasswordStats(password).strength()
+    strength = PasswordStats(pswd).strength()
     return strength > 0.6
 
 
-def order(form):
+def validate_order(form):
     # TODO: Validate order form here
     # for key in request.form:
     #     if request.form[key] == '':
@@ -27,42 +41,45 @@ def order(form):
     return None
 
 
-def register(form):
-    email = form['email']
-    password = form['password']
-    password_repeat = form['password_repeat']
-    name = form['name']
-    phone = form['phone']
-
-    if 6 > len(password):
+def validate_register(pswd, pswd_repeat, email, name, phone, city):
+    if not name.replace(' ', '').isalpha():
+        return 'Your name has illegal characters!'
+    if 4 > len(name):
+        return 'Your name is too short'
+    if 20 < len(name):
+        return 'Your name is too long'
+    if 6 > len(pswd):
         return 'Password is too short! (less than 6 symbols)'
-    if 100 < len(password):
+    if 100 < len(pswd):
         return 'Password is too long! (more than 100 symbols)'
-    if not password_is_strong(password):
-        return 'Password not strong enough!'
-    if password != password_repeat:
-        return "Passwords must match!"
-    # TODO: Check email correctness with RE
-
+    if pswd != pswd_repeat:
+        return "Passwords must match"
+    if not pswd_is_strong(pswd):
+        return 'Password is not strong enough'
+    email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'   # Not sure if this is correct code
+    if not re.fullmatch(email_regex, email):
+        return 'Invalid email'
+    valid_cities = ['', 'Kyiv', 'Kiev']
+    if city not in valid_cities:
+        return 'Unsupported city'
+    if len(phone) < 8 or len(phone) > 12 or not phone.isnumeric():
+        return 'Invalid phone number'
     if db.is_email_in_db(email):
         return 'This email is already in use!'
 
-    return None
 
+def validate_login(email, pswd):
+    db_pswd = db.get_pswd_by_email(email)
 
-def login(email, password):
-    db_password = db.get_password_by_email(email)
-
-    if db_password is None:
+    if db_pswd is None:
         return
 
-    db_password = str(db_password)
-    db_password = db_password[4:len(db_password)-1]
-    db_password = db_password.rstrip('\\x00')
-    db_password = db_password[0:len(db_password)-1]
-    db_password = db_password.encode('utf-8')
+    db_pswd = str(db_pswd)
+    db_pswd = db_pswd[4:len(db_pswd)-1]
+    db_pswd = db_pswd.rstrip('\\x00')
+    db_pswd = db_pswd[0:len(db_pswd)-1]
 
-    if not check_password(password, db_password):
+    if not check_pswd(pswd, db_pswd):
         return
 
     user_id = db.get_user_id_by_email(email)
@@ -70,12 +87,11 @@ def login(email, password):
     return user_id
 
 
-def products(ptype, price_min, price_max, sort, page, from_top):
-    if not (price_min is None or price_min.isnumeric()) \
-            or not (price_max is None or price_max.isnumeric()) \
-            or not (page is None or page.isnumeric()) \
-            or not (sort is None or sort.isnumeric()) \
-            or not (from_top is None or from_top == '0' or from_top == '1'):
+def validate_products(ptype, price_min, price_max, sort, page, from_top):
+    try:
+        return int(price_max) >= int(price_min) >= 0 \
+               and int(page) >= 0 >= int(sort) \
+               and (from_top == '0' or from_top == '1') \
+               and ptype.replace(' ', '').isalpha()
+    except ValueError:
         return False
-
-    return len(ptype) != 0 and ptype.replace(' ', '').isalpha()
